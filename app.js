@@ -9,7 +9,7 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(__dirname + '/public'));
-app.use(session({ secret: 'your_secret_key', resave: false, saveUninitialized: false }));
+app.use(session({ secret: 'alksdnqwoikdnaljlsnnkacs', resave: false, saveUninitialized: false }));
 app.use(passport.initialize());
 app.use(passport.session());
 
@@ -75,7 +75,7 @@ function isAdmin(req, res, next) {
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------/
 
-//-------------------------------------------------------------------------------LOGIN-LOGOUT------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------LOGIN-LOGOUT-REGISTER------------------------------------------------------------------------------------------------------------------
 
 app.post('/login', passport.authenticate('local', {
     successRedirect: '/products',
@@ -92,6 +92,27 @@ app.get('/logout', (req, res, next) => {
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname) + '/public/login.html');
 });
+
+app.get('/api/users', (req, res) => {
+    res.send(users);
+});
+
+app.get('/registerUser', (req, res) => {
+    res.sendFile(path.join(__dirname) + '/public/register_user.html');
+});
+
+
+app.post('/api/users', (req, res) => {
+    const newUser = {
+        id: users.length + 1,
+        username: req.body.username,
+        password: req.body.password,
+        role: 'client'
+    };
+    users.push(newUser);
+    res.send(newUser);
+});
+
 //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
@@ -109,7 +130,7 @@ app.get('/add-product', isAdmin, (req, res) => {
     res.sendFile(path.join(__dirname) + '/public/add_product.html');
 });
 
-app.post('/api/products', isAdmin, (req, res) => {
+app.post('/api/products', (req, res) => {
     const newProduct = {
         id: products.length + 1,
         name: req.body.name,
@@ -119,11 +140,12 @@ app.post('/api/products', isAdmin, (req, res) => {
         stock: req.body.stock
     };
     products.push(newProduct);
-    res.send(newProduct);
+    res.status(201).json(newUser);
 });
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+console.log(users)
 
 app.listen(3000, () => {
     console.log('Running');
