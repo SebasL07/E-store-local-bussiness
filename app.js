@@ -90,7 +90,10 @@ app.get('/logout', (req, res, next) => {
 });
 
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname) + '/public/login.html');
+    if (req.isAuthenticated()) {
+        return res.redirect('/products');
+    }
+    res.sendFile(path.join(__dirname, 'public', 'login.html'));
 });
 
 app.get('/api/users', (req, res) => {
