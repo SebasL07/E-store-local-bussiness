@@ -59,12 +59,15 @@ document.getElementById('product-form').addEventListener('submit', async (event)
         })
     });
 
-    const product = await response.json();
-    console.log(product);
     // Limpiar los campos del formulario
     document.getElementById('name').value = '';
     document.getElementById('description').value = '';
     document.getElementById('price').value = '';
     document.getElementById('image').value = '';
     document.getElementById('stock').value = '';
+
+    window.location.href = '/products';
 });
+
+
+
