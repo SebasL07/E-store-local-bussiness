@@ -9,7 +9,12 @@
     <div class="page-nav">
         <h1>Tienda Online</h1>
         <button id="checkout" class="button-checkout" onclick="pay()">Pagar $ </button>
-        <button onclick="window.location.href='/add-product'">Agregar un producto</button>
+        <% if (user.role==='admin' ) { %>
+            <button id="add-product" class="button-add-product" onclick="window.location.href='/add-product'">Agregar un
+                producto</button>
+            <% } %>
+                <button id="logout" class="button-loggout" onclick="window.location.href='/logout'">Cerrar sesion
+                </button>
     </div>
     <div id="page-content" class="page-content">
 
