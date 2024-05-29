@@ -1,21 +1,24 @@
 <!DOCTYPE html>
 <html>
-
 <head>
-    <title>Registrarse</title>
+  <title>Registrarse</title>
+  <link rel="stylesheet" href="/styles/register_user.css">
 </head>
-
 <body>
-    <h1>Registrarse</h1>
-    <form id="register-form">
-        <label for="username">Nombre:</label><br>
-        <input type="text" id="username" name="username"><br>
-        <label for="password">Contraseña:</label><br>
-        <input type="text" id="password" name="password"><br>
-        <input type="submit" value="registrarse">
-    </form>
-
-    <script src="register_user.js"></script>
+  <div class="container">
+    <div class="form-container">
+      <h1>PINDY</h1>
+      <h2>Crear cuenta</h2>
+      <form id="register-form">
+        <label for="username">Nombre de usuario</label>
+        <input type="text" id="username" name="username">
+        <label for="password">Contraseña</label>
+        <input type="password" id="password" name="password">
+        <input type="submit" value="Registrarse">
+      </form>
+    </div>
+    <img src="/resources/register.png" alt="Profile Image" class="profile-image">
+  </div>
+  <script src="register_user.js"></script>
 </body>
-
 </html>
