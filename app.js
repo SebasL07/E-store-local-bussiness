@@ -183,10 +183,40 @@ app.post('/api/products', (req, res) => {
         stock: req.body.stock
     };
     products.push(newProduct);
-    res.status(201).json(newUser);
+    res.status(201).json(newProduct);
 });
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+//-------------------------------------------------------------------------------SHOPPING-CART------------------------------------------------------------------------------------------------------------------
+
+app.get('/shopping-cart', isAuthenticated, (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'shopping_cart.html'));
+});
+
+app.get('/api/shopping_list', isAuthenticated, (req, res) => {
+    if (!req.session.shopping_list) {
+        req.session.shopping_list = [];
+    }
+    res.send(req.session.shopping_list);
+});
+
+app.post('/api/shopping_list', isAuthenticated, (req, res) => {
+    if (!req.session.shopping_list) {
+        req.session.shopping_list = [];
+    }
+    const product = products.find(p => p.id === req.body.id);
+    if (product) {
+        req.session.shopping_list.push(product);
+        res.status(201).json(product);
+    } else {
+        res.status(404).json({ message: 'Product not found' });
+    }
+});
+
+
+//-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 
 console.log(users)
 

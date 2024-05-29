@@ -1,33 +1,35 @@
 let products = [];
-let total = 0;
-
-function add(product, price) {
-    console.log(product);
-    products.push(product);
-    total = total + price;
-    document.getElementById("checkout").innerHTML = `pagar $${total}`
-}
-
-function pay() {
-    window.alert(products.join(", \n"));
-}
 
 function displayProducts(productList) {
-    let productsHTML = ' ';
+    let productsHTML = '';
     productList.forEach(element => {
         productsHTML +=
             `<div class="product-container">
                 <h3>${element.name}</h3>
-                <img src = "${element.image}" />
+                <img src="${element.image}" />
                 <h3>Precio: $${element.price}</h3>
                 <h6>${element.description}</h6>
                 <h4>Cantidad disponible: ${element.stock}</h4>
-                <button class = "button-add" onclick = "add(${element.id}, ${element.price})">Agregar</button>
-            </div>
-
-        `
+                <button class="button-add" onclick="add(${element.id}, ${element.price})">Agregar</button>
+            </div>`;
     });
     document.getElementById('page-content').innerHTML = productsHTML;
+}
+
+async function add(productId, price) {
+    const response = await fetch('/api/shopping_list', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ id: productId })
+    });
+
+    if (response.ok) {
+        const product = await response.json();
+        total += price;
+        document.getElementById("total").innerHTML = `$${total}`;
+    }
 }
 
 window.onload = async () => {
@@ -68,6 +70,5 @@ document.getElementById('product-form').addEventListener('submit', async (event)
 
     window.location.href = '/products';
 });
-
 
 
