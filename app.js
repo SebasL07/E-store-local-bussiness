@@ -3,6 +3,8 @@ const express = require('express');
 const path = require('path');
 const session = require('express-session');
 const passport = require('passport');
+const PDFDocument = require('pdfkit');
+const fs = require('fs');
 const LocalStrategy = require('passport-local').Strategy;
 const app = express();
 
@@ -212,7 +214,37 @@ app.post('/api/shopping_list', isAuthenticated, (req, res) => {
     } else {
         res.status(404).json({ message: 'Product not found' });
     }
+    
+
 });
+
+app.post('/api/checkout', isAuthenticated, (req, res) => {
+    const shoppingList = req.session.shopping_list || [];
+    const PDFDocument = require('pdfkit');
+    const doc = new PDFDocument();
+    let filename = `factura-${Date.now()}.pdf`;
+
+    res.setHeader('Content-disposition', 'attachment; filename="' + filename + '"');
+    res.setHeader('Content-type', 'application/pdf');
+
+    doc.text('Factura de compra', { align: 'center' });
+    doc.moveDown();
+    let total = 0;
+    shoppingList.forEach((item, index) => {
+        doc.text(`${index + 1}. ${item.name} - $${item.price}`);
+        total += item.price;
+    });
+
+    doc.moveDown();
+    doc.text(`Total: $${total}`, { align: 'right' });
+
+    doc.pipe(res);
+    doc.end();
+
+    // Clear the shopping cart
+    req.session.shopping_list = [];
+});
+
 
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
