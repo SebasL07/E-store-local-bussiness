@@ -1,10 +1,34 @@
-let total = 0;
+let shopping_cart = {
+    items: []
+}
 
 async function pay() {
-    const response = await fetch('/api/shopping_list');
-    const products = await response.json();
-    const productNames = products.map(p => p.name).join(", \n");
-    window.alert(productNames);
+    const response = await fetch('/api/checkout', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    });
+
+    if (response.ok) {
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.style.display = 'none';
+        a.href = url;
+        a.download = 'factura.pdf';
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        alert('Compra realizada con éxito. Tu factura se está descargando.');
+
+        // Clear the cart in the frontend
+        shopping_cart.items = [];
+        display_shopping_cart([]);
+        document.getElementById('total').innerHTML = 'Total: $0';
+    } else {
+        alert('Error al procesar el pago.');
+    }
 }
 
 window.onload = async () => {
