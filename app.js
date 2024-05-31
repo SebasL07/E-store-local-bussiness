@@ -23,8 +23,8 @@ app.set('views', path.join(__dirname, '/views'));
 
 //-------------------------------------------------------------------------------CREATED ELEMENTS------------------------------------------------------------------------------------------------------------------
 const users = [
-    { id: 1, username: 'admin', password: 'adminpass', role: 'admin' },
-    { id: 2, username: 'client', password: 'clientpass', role: 'client' }
+    { id: 1, username: 'admin', password: 'adminpass', role: 'admin' ,purchaseHistory : []},
+    { id: 2, username: 'client', password: 'clientpass', role: 'client',purchaseHistory : []}
 ];
 
 let products = [
@@ -152,7 +152,8 @@ app.post('/api/users', (req, res) => {
         id: users.length + 1,
         username: req.body.username,
         password: req.body.password,
-        role: 'client'
+        role: 'client',
+        purchaseHistory : []
     };
     users.push(newUser);
     res.send(newUser);
@@ -190,7 +191,7 @@ app.post('/api/products', (req, res) => {
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-//-------------------------------------------------------------------------------SHOPPING-CART------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------SHOPPING-CART AND PURCHASE HISTORY------------------------------------------------------------------------------------------------------------------
 
 app.get('/shopping-cart', isAuthenticated, (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'shopping_cart.html'));
@@ -241,8 +242,30 @@ app.post('/api/checkout', isAuthenticated, (req, res) => {
     doc.pipe(res);
     doc.end();
 
+    const user = users.find(u => u.id === req.user.id);
+    if(user){
+        user.purchaseHistory.push({
+            date: new Date(),
+            items : shoppingList,
+            total : total
+        });
+    }
+
     // Clear the shopping cart
     req.session.shopping_list = [];
+});
+
+app.get('/shopping-history', isAuthenticated, (req,res) => {
+    res.sendFile(path.join(__dirname, 'public', 'shopping_history.html'));
+})
+
+app.get('/api/shopping_history',isAuthenticated, (req,res) => {
+    const user = users.find(u => u.id === req.user.id);
+    if(user){
+        res.send(user.purchaseHistory);
+    } else {
+        res.status(404).send({message : 'Usuario no encontrado'});
+    }
 });
 
 
