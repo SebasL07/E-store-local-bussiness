@@ -1,4 +1,3 @@
----
 
 # Pindy Tienda Online de Ropa
 
@@ -63,5 +62,4 @@ Ahora abre el navegador de tu preferencia e ingresa aquí: [http://127.0.0.1:300
 
 Podrás ingresar con las credenciales que se mencionaron anteriormente de Administrador y Cliente, de lo contrario podrás crear un usuario con rol de Cliente para ingresar a la plataforma.
 
----
 
