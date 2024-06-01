@@ -5,15 +5,19 @@ window.onload = async () => {
     calculateTotal(shopping_history);
 }
 
-function displayShoppingHistory(history){
+function displayShoppingHistory(history) {
     let list = '';
 
-    history.array.forEach(element => {
-       list+=`
+    history.forEach(element => {
+        list += `
             <li>
                 Fecha: ${element.date.toLocaleString()}
+                <ul>
+                    ${element.items.map(item => `<li>${item.name} - $${item.price}</li>`).join('')}
+                </ul>
+                Total: $${element.total}
             </li>
-       ` 
+       `
     });
 
     document.getElementById('shopping-history').innerHTML = list;
