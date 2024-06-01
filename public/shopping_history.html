@@ -8,17 +8,28 @@
     <title>Historial de compras</title>
 </head>
 <body>
+
+    
     <header>
         <h1>PINDY</h1>
+
+        <nav>
+            <li><a href="/products">Home</a></li>
+            <% if (user.role==='admin' ) { %>
+                <li><a href="/add-product">Agregar Producto</a></li>
+            <% } %>
+            <li><a href="/shopping-history">Historial de compras</a></li>
+            <li><a href="/shopping-cart">&#x1F6D2;</a></li>
+            <li><a href="/logout">Cerrar sesión</a></li>
+        </nav>
     </header>
     <main>
         <h2>Historial de compras</h2>
         <div class="list-container">
             <ul id="shopping-history">
-                
+
             </ul>
-        </main>
         </div>
-       
+    </main>
 </body>
 </html>

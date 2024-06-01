@@ -1,6 +1,8 @@
-window.onload = async() =>{
-    const shopping_history = await (await fetch('/api/purchase_history')).json;
+window.onload = async () => {
+    const shopping_history = await (await fetch("/api/shopping_history")).json();
+    console.log(shopping_history);
     displayShoppingHistory(shopping_history);
+    calculateTotal(shopping_history);
 }
 
 function displayShoppingHistory(history){
@@ -14,5 +16,5 @@ function displayShoppingHistory(history){
        ` 
     });
 
-    document.getElementById('shopping-history').innerHTML() = list;
+    document.getElementById('shopping-history').innerHTML = list;
 }

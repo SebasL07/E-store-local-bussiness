@@ -262,7 +262,7 @@ app.get('/shopping-history', isAuthenticated, (req,res) => {
 app.get('/api/shopping_history',isAuthenticated, (req,res) => {
     const user = users.find(u => u.id === req.user.id);
     if(user){
-        res.send(user.purchaseHistory);
+        res.send(req.user.purchaseHistory);
     } else {
         res.status(404).send({message : 'Usuario no encontrado'});
     }
