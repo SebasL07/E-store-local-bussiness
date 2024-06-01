@@ -52,6 +52,11 @@ Dentro de nuestra página ya existen usuarios, a continuación se muestran los u
 
 ## Ejecución de la Aplicación
 
+Primeramente debes descargar la siguiente dependencia:
+```sh
+npm i nodemon -D
+```
+
 Para correr el programa se deberá usar el siguiente comando:
 
 ```sh

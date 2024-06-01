@@ -1,6 +1,8 @@
 let products = [];
 
 function displayProducts(productList) {
+    // Esta función recibe una lista de productos y los muestra en la página
+
     let productsHTML = '';
     productList.forEach(element => {
         productsHTML +=
@@ -17,6 +19,9 @@ function displayProducts(productList) {
 }
 
 async function add(productId, price) {
+    // Esta función agrega un producto al carrito de compras
+    // realizando una solicitud POST a '/api/shopping_list'
+
     const response = await fetch('/api/shopping_list', {
         method: 'POST',
         headers: {
@@ -33,6 +38,9 @@ async function add(productId, price) {
 }
 
 window.onload = async () => {
+    // Cuando la página carga, se realiza una solicitud fetch a '/api/products'
+    // para obtener la lista de productos
+
     const productList = await (await fetch("/api/products")).json();
     console.log(productList);
     displayProducts(productList);
@@ -41,12 +49,14 @@ window.onload = async () => {
 document.getElementById('product-form').addEventListener('submit', async (event) => {
     event.preventDefault();
 
+    // Se obtienen los valores del formulario de producto
     const name = document.getElementById('name').value;
     const description = document.getElementById('description').value
     const price = document.getElementById('price').value;
     const image = document.getElementById('image').value;
     const stock = document.getElementById('stock').value;
 
+    // Se realiza una solicitud POST a '/api/products' para agregar un nuevo producto
     const response = await fetch('/api/products', {
         method: 'POST',
         headers: {
@@ -61,13 +71,14 @@ document.getElementById('product-form').addEventListener('submit', async (event)
         })
     });
 
-    // Limpiar los campos del formulario
+    // Se limpian los campos del formulario
     document.getElementById('name').value = '';
     document.getElementById('description').value = '';
     document.getElementById('price').value = '';
     document.getElementById('image').value = '';
     document.getElementById('stock').value = '';
 
+    // Se redirige al usuario a la página de productos
     window.location.href = '/products';
 });
 

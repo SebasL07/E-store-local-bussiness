@@ -22,11 +22,12 @@ app.set('views', path.join(__dirname, '/views'));
 
 
 //-------------------------------------------------------------------------------CREATED ELEMENTS------------------------------------------------------------------------------------------------------------------
+// Array de usuarios
 const users = [
-    { id: 1, username: 'admin', password: 'adminpass', role: 'admin' ,purchaseHistory : []},
-    { id: 2, username: 'client', password: 'clientpass', role: 'client',purchaseHistory : []}
+    { id: 1, username: 'admin', password: 'adminpass', role: 'admin', purchaseHistory: [] },
+    { id: 2, username: 'client', password: 'clientpass', role: 'client', purchaseHistory: [] }
 ];
-
+// Array de productos
 let products = [
     {
         id: 1,
@@ -81,6 +82,7 @@ let products = [
 
 
 //-------------------------------------------------------------------------------PERMISSIONS------------------------------------------------------------------------------------------------------------------
+// Estrategia de autenticación local con Passport.js
 passport.use(new LocalStrategy((username, password, done) => {
     const user = users.find(u => u.username === username && u.password === password);
     if (user) {
@@ -90,6 +92,7 @@ passport.use(new LocalStrategy((username, password, done) => {
     }
 }));
 
+// Serialización y deserialización de usuario
 passport.serializeUser((user, done) => {
     done(null, user.id);
 });
@@ -99,7 +102,7 @@ passport.deserializeUser((id, done) => {
     done(null, user);
 });
 
-// Middleware to check if user is authenticated
+// Middleware para verificar si el usuario está autenticado
 function isAuthenticated(req, res, next) {
     if (req.isAuthenticated()) {
         return next();
@@ -107,7 +110,7 @@ function isAuthenticated(req, res, next) {
     res.redirect('/');
 }
 
-// Middleware to check admin role
+// Middleware para verificar si el usuario tiene rol de administrador
 function isAdmin(req, res, next) {
     if (req.isAuthenticated() && req.user.role === 'admin') {
         return next();
@@ -119,11 +122,13 @@ function isAdmin(req, res, next) {
 
 //-------------------------------------------------------------------------------LOGIN-LOGOUT-REGISTER------------------------------------------------------------------------------------------------------------------
 
+// Ruta de inicio de sesión
 app.post('/login', passport.authenticate('local', {
     successRedirect: '/products',
     failureRedirect: '/'
 }));
 
+// Ruta de cierre de sesión
 app.get('/logout', (req, res, next) => {
     req.logout((err) => {
         if (err) { return next(err); }
@@ -131,6 +136,7 @@ app.get('/logout', (req, res, next) => {
     });
 });
 
+// Ruta de página de inicio
 app.get('/', (req, res) => {
     if (req.isAuthenticated()) {
         return res.redirect('/products');
@@ -138,22 +144,24 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'login.html'));
 });
 
+// Ruta para obtener los usuarios
 app.get('/api/users', (req, res) => {
     res.send(users);
 });
 
+// Ruta de página de registro de usuario
 app.get('/registerUser', (req, res) => {
     res.sendFile(path.join(__dirname) + '/public/register_user.html');
 });
 
-
+// Ruta para registrar un nuevo usuario
 app.post('/api/users', (req, res) => {
     const newUser = {
         id: users.length + 1,
         username: req.body.username,
         password: req.body.password,
         role: 'client',
-        purchaseHistory : []
+        purchaseHistory: []
     };
     users.push(newUser);
     res.send(newUser);
@@ -164,18 +172,22 @@ app.post('/api/users', (req, res) => {
 
 //-------------------------------------------------------------------------------PRODUCTS------------------------------------------------------------------------------------------------------------------
 
+// Ruta para obtener los productos
 app.get('/api/products', isAuthenticated, (req, res) => {
     res.send(products);
 });
 
+// Ruta de página de productos
 app.get('/products', isAuthenticated, (req, res) => {
     res.render('products', { user: req.user });
 });
 
+// Ruta de página para agregar un producto
 app.get('/add-product', isAdmin, (req, res) => {
     res.sendFile(path.join(__dirname) + '/public/add_product.html');
 });
 
+// Ruta para agregar un nuevo producto
 app.post('/api/products', (req, res) => {
     const newProduct = {
         id: products.length + 1,
@@ -193,10 +205,12 @@ app.post('/api/products', (req, res) => {
 
 //-------------------------------------------------------------SHOPPING-CART AND PURCHASE HISTORY------------------------------------------------------------------------------------------------------------------
 
+// Ruta para renderizar la página del carrito de compras
 app.get('/shopping-cart', isAuthenticated, (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'shopping_cart.html'));
 });
 
+// Ruta para obtener los productos en el carrito de compras de la sesión actual
 app.get('/api/shopping_list', isAuthenticated, (req, res) => {
     if (!req.session.shopping_list) {
         req.session.shopping_list = [];
@@ -204,6 +218,7 @@ app.get('/api/shopping_list', isAuthenticated, (req, res) => {
     res.send(req.session.shopping_list);
 });
 
+// Ruta para agregar un producto al carrito de compras en la sesión actual
 app.post('/api/shopping_list', isAuthenticated, (req, res) => {
     if (!req.session.shopping_list) {
         req.session.shopping_list = [];
@@ -215,10 +230,11 @@ app.post('/api/shopping_list', isAuthenticated, (req, res) => {
     } else {
         res.status(404).json({ message: 'Product not found' });
     }
-    
+
 
 });
 
+// Ruta para procesar el pago y generar una factura en formato PDF
 app.post('/api/checkout', isAuthenticated, (req, res) => {
     const shoppingList = req.session.shopping_list || [];
     const PDFDocument = require('pdfkit');
@@ -243,28 +259,30 @@ app.post('/api/checkout', isAuthenticated, (req, res) => {
     doc.end();
 
     const user = users.find(u => u.id === req.user.id);
-    if(user){
+    if (user) {
         user.purchaseHistory.push({
             date: new Date(),
-            items : shoppingList,
-            total : total
+            items: shoppingList,
+            total: total
         });
     }
 
-    // Clear the shopping cart
+    // Limpiar el carrito de compras
     req.session.shopping_list = [];
 });
 
-app.get('/shopping-history', isAuthenticated, (req,res) => {
+// Ruta para renderizar la página del historial de compras
+app.get('/shopping-history', isAuthenticated, (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'shopping_history.html'));
 })
 
-app.get('/api/shopping_history',isAuthenticated, (req,res) => {
+// Ruta para obtener el historial de compras del usuario autenticado
+app.get('/api/shopping_history', isAuthenticated, (req, res) => {
     const user = users.find(u => u.id === req.user.id);
-    if(user){
+    if (user) {
         res.send(req.user.purchaseHistory);
     } else {
-        res.status(404).send({message : 'Usuario no encontrado'});
+        res.status(404).send({ message: 'Usuario no encontrado' });
     }
 });
 
